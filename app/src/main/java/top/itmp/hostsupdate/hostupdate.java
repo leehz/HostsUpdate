@@ -150,11 +150,11 @@ public class hostupdate extends AppCompatActivity {
         public CharSequence getPageTitle(int position) {
             switch (position) {
                 case 0:
-                    return "SECTION 1";
+                    return "Hosts Update";
                 case 1:
-                    return "SECTION 2";
+                    return "Hosts Delete";
                 case 2:
-                    return "SECTION 3";
+                    return "Network Setting";
             }
             return null;
         }
