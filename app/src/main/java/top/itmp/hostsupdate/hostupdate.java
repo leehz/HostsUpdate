@@ -1,5 +1,6 @@
 package top.itmp.hostsupdate;
 
+import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -17,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.TableLayout;
 import android.widget.TextView;
 
 public class hostupdate extends AppCompatActivity {
@@ -55,6 +57,9 @@ public class hostupdate extends AppCompatActivity {
         tabLayout.setupWithViewPager(mViewPager);
 
         TabLayout.Tab tab0 = tabLayout.getTabAt(0);
+        TabLayout.Tab tab1 = tabLayout.getTabAt(1);
+        TabLayout.Tab tab2 = tabLayout.getTabAt(2);
+
 
 /* donot need this for now, comment it.
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -119,13 +124,37 @@ public class hostupdate extends AppCompatActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_hostupdate, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
+            View rootView = inflater.inflate(R.layout.fragment_hostsupdate, container, false);
+            //TextView textView = (TextView) rootView.findViewById(R.id.section_label);
+            //textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
             return rootView;
         }
     }
 
+    public static class TabFragment0 extends Fragment{
+        @Nullable
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+           // return super.onCreateView(inflater, container, savedInstanceState);
+            return inflater.inflate(R.layout.fragment_hostsupdate, container, false);
+        }
+    }
+    public static class TabFragment1 extends Fragment{
+        @Nullable
+        @Override
+        public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+            //return super.onCreateView(inflater, container, savedInstanceState);
+            return inflater.inflate(R.layout.fragment_hostsdelete, container, false);
+        }
+    }
+    public static class TabFragment2 extends Fragment{
+        @Nullable
+        @Override
+        public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+            //return super.onCreateView(inflater, container, savedInstanceState);
+            return inflater.inflate(R.layout.fragment_networksetting, container, false);
+        }
+    }
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
@@ -140,7 +169,20 @@ public class hostupdate extends AppCompatActivity {
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            return PlaceholderFragment.newInstance(position + 1);
+            //return PlaceholderFragment.newInstance(position + 1);
+            switch(position){
+                case 0:
+                    TabFragment0 tab0 = new TabFragment0();
+                    return tab0;
+                case 1:
+                    TabFragment1 tab1 = new TabFragment1();
+                    return tab1;
+                case 2:
+                    TabFragment2 tab2 = new TabFragment2();
+                    return tab2;
+                default:
+                    return null;
+            }
         }
 
         @Override
