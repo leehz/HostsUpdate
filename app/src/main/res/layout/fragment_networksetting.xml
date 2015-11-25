@@ -11,18 +11,32 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
-    <EditText
-        android:id="@+id/network_et"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/network_cancel"
         android:text="取消Network验证"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="44dp"
+        android:background="@color/btn_background"
+        />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/network_setting"
+        android:text="设置验证服务器"
         android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="44dp"
-        android:background="#64637b7b"
+        android:background="@color/btn_background"
         />
+    <EditText
+        android:id="@+id/network_et"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:layout_alignParentRight="true"
+        android:layout_above="@id/network_setting"/>
 </RelativeLayout>
