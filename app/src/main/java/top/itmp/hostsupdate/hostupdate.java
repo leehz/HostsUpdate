@@ -1,5 +1,7 @@
 package top.itmp.hostsupdate;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -21,10 +23,16 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TableLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.InputStream;
 
 public class hostupdate extends AppCompatActivity {
 
     private static String POSITION = "POSITION";
+    final int REQUEST_CODE_ASK_PERMISSIONS = 123;
     private TabLayout tabLayout = null;
 
 
@@ -62,6 +70,14 @@ public class hostupdate extends AppCompatActivity {
 
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
+/*
+        int hasWriteStoragePermission = checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (hasWriteStoragePermission != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    REQUEST_CODE_ASK_PERMISSIONS);
+            // return;
+        }
+        */
 /* Never Used, but left
         switch (tabLayout.getSelectedTabPosition()){
             case 0:
@@ -132,6 +148,57 @@ public class hostupdate extends AppCompatActivity {
         mViewPager.setCurrentItem(savedInstanceState.getInt(POSITION));
     }
 
+    /* for Android M
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode){
+            case REQUEST_CODE_ASK_PERMISSIONS:
+                if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    //Snackbar.make(null, "Replace with your own action", Snackbar.LENGTH_LONG)
+                      //      .setAction("Action", null).show();
+                    Toast.makeText(getApplicationContext(), "更新hosts.",Toast.LENGTH_SHORT).show();
+                }else {
+                   // Snackbar.make(null, "没有授予读写sdcard的权限！\n", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                    Toast.makeText(getApplicationContext(), "无法写入sd卡", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
+*/
+    /* add a runAsRoot func to run root shell commond  */
+     public String runAsRoot(String[] cmds, boolean hasOutput) throws Exception {
+        Process p = Runtime.getRuntime().exec("su");
+        DataOutputStream os = new DataOutputStream(p.getOutputStream());
+        InputStream is = p.getInputStream();
+        String result = null;
+        for (String tmpCmd : cmds) {
+            os.writeBytes(tmpCmd + "\n");
+            int readed = 0;
+            byte[] buff = new byte[4096];
+           // boolean cmdRequiresAnOutput = true;
+            if (hasOutput) {
+                while (is.available() <= 0) {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (Exception ex) {
+                    }
+                }
+
+                while (is.available() > 0) {
+                    readed = is.read(buff);
+                    if (readed <= 0) break;
+                    result = new String(buff, 0, readed);
+                   // result = seg; //result is a string to show in textview
+                }
+            }
+        }
+        os.writeBytes("exit\n");
+        os.flush();
+        return result;
+    }
+
     /**
      * A placeholder fragment containing a simple view.
      */
@@ -179,7 +246,15 @@ public class hostupdate extends AppCompatActivity {
             host_update_btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    host_update_tv.setText("hello world");
+                    // host_update_tv.setText("hello world");
+
+                    File file = new File("/system/xbin/su");
+                    if(!file.exists()){
+                        host_update_tv.setText("手机没有root， 无法进行更新hosts\n");
+                        return;
+                    }
+
+
                 }
             });
 
