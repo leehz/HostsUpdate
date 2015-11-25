@@ -21,7 +21,5 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="44dp"
-        android:background="#64637b7b"
-        android:shadowRadius="100"
-         />
+        android:background="#64637b7b" />
 </RelativeLayout>

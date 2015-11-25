@@ -199,7 +199,7 @@ public class hostupdate extends AppCompatActivity {
                 case 1:
                     return "Hosts Delete";
                 case 2:
-                    return "Network Setting";
+                    return "Network Set";
             }
             return null;
         }
