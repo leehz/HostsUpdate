@@ -23,6 +23,9 @@ import android.widget.TextView;
 
 public class hostupdate extends AppCompatActivity {
 
+    private static String POSITION = "POSITION";
+    private TabLayout tabLayout = null;
+
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -53,7 +56,7 @@ public class hostupdate extends AppCompatActivity {
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
         TabLayout.Tab tab0 = tabLayout.getTabAt(0);
@@ -94,6 +97,18 @@ public class hostupdate extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(POSITION, tabLayout.getSelectedTabPosition());
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        mViewPager.setCurrentItem(savedInstanceState.getInt(POSITION));
     }
 
     /**
