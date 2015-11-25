@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.Button;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
@@ -25,6 +26,7 @@ public class hostupdate extends AppCompatActivity {
 
     private static String POSITION = "POSITION";
     private TabLayout tabLayout = null;
+
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -43,6 +45,7 @@ public class hostupdate extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hostupdate);
 
@@ -55,14 +58,32 @@ public class hostupdate extends AppCompatActivity {
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
+        mViewPager.setOffscreenPageLimit(3);
 
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
+/* Never Used, but left
+        switch (tabLayout.getSelectedTabPosition()){
+            case 0:
+                host_update_tv = (TextView)findViewById(R.id.host_update_tv);
+                host_update_btn = (Button)findViewById(R.id.host_update_btn);
+                //host_update_tv.setText("hello wordl!!");
+                host_update_btn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        host_update_tv.setText("aaaa");
+                    }
+                });
+                break;
+            case 1:
+                break;
 
-        TabLayout.Tab tab0 = tabLayout.getTabAt(0);
-        TabLayout.Tab tab1 = tabLayout.getTabAt(1);
-        TabLayout.Tab tab2 = tabLayout.getTabAt(2);
-
+            case 2:
+                break;
+            default:
+                   break;
+        }
+*/
 
 /* donot need this for now, comment it.
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -147,11 +168,36 @@ public class hostupdate extends AppCompatActivity {
     }
 
     public static class TabFragment0 extends Fragment{
-        @Nullable
+
+        int mCurCheckPosition = 0;
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
            // return super.onCreateView(inflater, container, savedInstanceState);
-            return inflater.inflate(R.layout.fragment_hostsupdate, container, false);
+            View rootView = inflater.inflate(R.layout.fragment_hostsupdate, container, false);
+            final TextView host_update_tv = (TextView)rootView.findViewById(R.id.host_update_tv);
+            Button host_update_btn = (Button)rootView.findViewById(R.id.host_update_btn);
+            host_update_btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    host_update_tv.setText("hello world");
+                }
+            });
+
+            return rootView;
+        }
+
+        @Override
+        public void onSaveInstanceState(Bundle outState) {
+            super.onSaveInstanceState(outState);
+            outState.putInt("curChoice", mCurCheckPosition);
+        }
+
+        @Override
+        public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+            super.onActivityCreated(savedInstanceState);
+            if (savedInstanceState != null) {
+                mCurCheckPosition = savedInstanceState.getInt("curChoice", 0);
+            }
         }
     }
     public static class TabFragment1 extends Fragment{
