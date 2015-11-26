@@ -2,6 +2,7 @@ package top.itmp.hostsupdate;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -28,8 +29,11 @@ import android.widget.Toast;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.lang.reflect.MalformedParameterizedTypeException;
+import java.net.MalformedURLException;
+import java.net.URL;
 
-public class hostupdate extends AppCompatActivity {
+public class HostUpdate extends AppCompatActivity {
 
     private static String POSITION = "POSITION";
     final int REQUEST_CODE_ASK_PERMISSIONS = 123;
@@ -70,14 +74,14 @@ public class hostupdate extends AppCompatActivity {
 
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
-/*
+
         int hasWriteStoragePermission = checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if (hasWriteStoragePermission != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE},
                     REQUEST_CODE_ASK_PERMISSIONS);
             // return;
         }
-        */
+
 /* Never Used, but left
         switch (tabLayout.getSelectedTabPosition()){
             case 0:
@@ -148,7 +152,7 @@ public class hostupdate extends AppCompatActivity {
         mViewPager.setCurrentItem(savedInstanceState.getInt(POSITION));
     }
 
-    /* for Android M
+    /* for Android M */
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode){
@@ -166,7 +170,7 @@ public class hostupdate extends AppCompatActivity {
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
-*/
+
     /* add a runAsRoot func to run root shell commond  */
      public String runAsRoot(String[] cmds, boolean hasOutput) throws Exception {
         Process p = Runtime.getRuntime().exec("su");
@@ -234,7 +238,7 @@ public class hostupdate extends AppCompatActivity {
         }
     }
 
-    public static class TabFragment0 extends Fragment{
+    public class TabFragment0 extends Fragment{
 
         int mCurCheckPosition = 0;
         @Override
@@ -253,6 +257,15 @@ public class hostupdate extends AppCompatActivity {
                         host_update_tv.setText("手机没有root， 无法进行更新hosts\n");
                         return;
                     }
+
+                    // use downtask to download hosts file to /sdcard
+                    DownTask downTask = new DownTask(HostUpdate.this);
+                    try {
+                        downTask.execute(new URL("https://raw.githubusercontent.com/racaljk/hosts/master/hosts"));
+                    } catch (MalformedURLException e){
+                        e.printStackTrace();
+                    }
+
 
 
                 }
