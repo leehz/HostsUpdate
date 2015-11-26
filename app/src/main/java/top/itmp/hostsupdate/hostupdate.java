@@ -247,6 +247,7 @@ public class HostUpdate extends AppCompatActivity {
             final View rootView = inflater.inflate(R.layout.fragment_hostsupdate, container, false);
             final TextView host_update_tv = (TextView)rootView.findViewById(R.id.host_update_tv);
             final Button host_update_btn = (Button)rootView.findViewById(R.id.host_update_btn);
+            host_update_tv.setText("如要更新hosts，确认手机具有root功能\n使用下面的按钮来更新手机hosts，该hosts具有访问Google、facebook 等网站的能力，可以成功使用大部分的Google服务（如：联系人 日历同步， 邮件，Drive等）...");
             host_update_btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -267,7 +268,7 @@ public class HostUpdate extends AppCompatActivity {
                     }
 
                     try {
-                        runAsRoot("mount -o rw,remount /system && mv "+ Environment.getExternalStorageDirectory().toString()+ File.separator+"hosts"+" /system/etc/hosts && chmod 644 /system/etc/hosts", false);
+                        runAsRoot("mount -o rw,remount /system && mv " + Environment.getExternalStorageDirectory().toString() + File.separator + "hosts" + " /system/etc/hosts && chmod 644 /system/etc/hosts", false);
                         runAsRoot("chown root:root /system/etc/hosts", false);
                         String rtn = runAsRoot("stat -c \"%n %s\"bytes\"\n" + "%z %U:%G\" /system/etc/hosts", true);
                         host_update_tv.setText(rtn);
@@ -302,7 +303,11 @@ public class HostUpdate extends AppCompatActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
             //return super.onCreateView(inflater, container, savedInstanceState);
-            return inflater.inflate(R.layout.fragment_hostsdelete, container, false);
+            View rootView =  inflater.inflate(R.layout.fragment_hostsdelete, container, false);
+            Button delete_hosts_btn = (Button)rootView.findViewById(R.id.hosts_delete_btn);
+            TextView delete_hosts_tv = (TextView)rootView.findViewById(R.id.hosts_delete_tv);
+
+            return rootView;
         }
     }
     public static class TabFragment2 extends Fragment{
