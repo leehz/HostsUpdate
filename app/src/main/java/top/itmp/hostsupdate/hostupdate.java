@@ -172,13 +172,13 @@ public class HostUpdate extends AppCompatActivity {
     }
 
     /* add a runAsRoot func to run root shell commond  */
-     public String runAsRoot(String[] cmds, boolean hasOutput) throws Exception {
+     public String runAsRoot(String cmd, boolean hasOutput) throws Exception {
         Process p = Runtime.getRuntime().exec("su");
         DataOutputStream os = new DataOutputStream(p.getOutputStream());
         InputStream is = p.getInputStream();
         String result = null;
-        for (String tmpCmd : cmds) {
-            os.writeBytes(tmpCmd + "\n");
+        //for (String tmpCmd : cmds) {
+            os.writeBytes(cmd + "\n");
             int readed = 0;
             byte[] buff = new byte[4096];
            // boolean cmdRequiresAnOutput = true;
@@ -197,7 +197,7 @@ public class HostUpdate extends AppCompatActivity {
                    // result = seg; //result is a string to show in textview
                 }
             }
-        }
+        //}
         os.writeBytes("exit\n");
         os.flush();
         return result;
@@ -246,7 +246,7 @@ public class HostUpdate extends AppCompatActivity {
            // return super.onCreateView(inflater, container, savedInstanceState);
             final View rootView = inflater.inflate(R.layout.fragment_hostsupdate, container, false);
             final TextView host_update_tv = (TextView)rootView.findViewById(R.id.host_update_tv);
-            Button host_update_btn = (Button)rootView.findViewById(R.id.host_update_btn);
+            final Button host_update_btn = (Button)rootView.findViewById(R.id.host_update_btn);
             host_update_btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -266,7 +266,16 @@ public class HostUpdate extends AppCompatActivity {
                         e.printStackTrace();
                     }
 
-
+                    try {
+                        runAsRoot("mount -o rw,remount /system && mv "+ Environment.getExternalStorageDirectory().toString()+ File.separator+"hosts"+" /system/etc/hosts && chmod 644 /system/etc/hosts", false);
+                        runAsRoot("chown root:root /system/etc/hosts", false);
+                        String rtn = runAsRoot("stat -c \"%n %s\"bytes\"\n" + "%z %U:%G\" /system/etc/hosts", true);
+                        host_update_tv.setText(rtn);
+                        host_update_btn.append("\n Hosts 更新完成.\n");
+                        //String rtn = runAsRoot("mount -o rw,remount /system && mv " + Environment.getExternalStorageDirectory().toString() + File.separator + "hosts" + "/system/etc/hosts && chown root:root /system/etc/hosts && chmod 644 /system/etc/hosts && \"stat -c \\\"%n %s\\\"bytes\\\"\\n%z %U:%G\\\" /system/etc/hosts\\n\"", true);
+                    } catch (Exception e){
+                        e.printStackTrace();
+                    }
 
                 }
             });
