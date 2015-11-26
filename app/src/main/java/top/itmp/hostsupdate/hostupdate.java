@@ -38,7 +38,10 @@ public class HostUpdate extends AppCompatActivity {
     private static String POSITION = "POSITION";
     final int REQUEST_CODE_ASK_PERMISSIONS = 123;
     private TabLayout tabLayout = null;
-
+    private View rootView = null;
+    private TextView hosts_update_tv = null;
+    private TextView hosts_delete_tv = null;
+    private TextView network_set_tv = null;
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -244,39 +247,46 @@ public class HostUpdate extends AppCompatActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
            // return super.onCreateView(inflater, container, savedInstanceState);
-            final View rootView = inflater.inflate(R.layout.fragment_hostsupdate, container, false);
-            final TextView host_update_tv = (TextView)rootView.findViewById(R.id.host_update_tv);
+            rootView = inflater.inflate(R.layout.fragment_hostsupdate, container, false);
+            hosts_update_tv = (TextView)rootView.findViewById(R.id.host_update_tv);
             final Button host_update_btn = (Button)rootView.findViewById(R.id.host_update_btn);
-            host_update_tv.setText("如要更新hosts，确认手机具有root功能\n使用下面的按钮来更新手机hosts，该hosts具有访问Google、facebook 等网站的能力，可以成功使用大部分的Google服务（如：联系人 日历同步， 邮件，Drive等）...");
+            hosts_update_tv.setText("如要更新hosts，确认手机具有root功能\n使用下面的按钮来更新手机hosts，该hosts具有访问Google、facebook 等网站的能力，可以成功使用大部分的Google服务（如：联系人 日历同步， 邮件，Drive等）...");
             host_update_btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     // host_update_tv.setText("hello world");
 
                     File file = new File("/system/xbin/su");
-                    if(!file.exists()){
-                        host_update_tv.setText("手机没有root， 无法进行更新hosts\n");
+                    if (!file.exists()) {
+                        hosts_update_tv.setText("手机没有root， 无法进行更新hosts\n");
                         return;
                     }
+
+                    File hosts_file = new File(Environment.getExternalStorageDirectory() + File.separator + "hosts");
+                    if(hosts_file.exists())
+                        hosts_file.delete();
 
                     // use downtask to download hosts file to /sdcard
                     DownTask downTask = new DownTask(HostUpdate.this);
                     try {
+                        hosts_update_tv.setText("");
                         downTask.execute(new URL("https://raw.githubusercontent.com/racaljk/hosts/master/hosts"));
-                    } catch (MalformedURLException e){
+                    } catch (MalformedURLException e) {
                         e.printStackTrace();
                     }
 
-                    try {
-                        runAsRoot("mount -o rw,remount /system && mv " + Environment.getExternalStorageDirectory().toString() + File.separator + "hosts" + " /system/etc/hosts && chmod 644 /system/etc/hosts", false);
-                        runAsRoot("chown root:root /system/etc/hosts", false);
-                        String rtn = runAsRoot("stat -c \"%n %s\"bytes\"\n" + "%z %U:%G\" /system/etc/hosts", true);
-                        host_update_tv.setText(rtn);
-                        host_update_btn.append("\n Hosts 更新完成.\n");
-                        //String rtn = runAsRoot("mount -o rw,remount /system && mv " + Environment.getExternalStorageDirectory().toString() + File.separator + "hosts" + "/system/etc/hosts && chown root:root /system/etc/hosts && chmod 644 /system/etc/hosts && \"stat -c \\\"%n %s\\\"bytes\\\"\\n%z %U:%G\\\" /system/etc/hosts\\n\"", true);
-                    } catch (Exception e){
-                        e.printStackTrace();
-                    }
+                            hosts_update_tv.append("下载完成。。\n");
+                            try {
+                                runAsRoot("mount -o rw,remount /system && mv " + Environment.getExternalStorageDirectory().toString() + File.separator + "hosts" + " /system/etc/hosts && chmod 644 /system/etc/hosts", false);
+                                runAsRoot("chown root:root /system/etc/hosts", false);
+
+                                String rtn = runAsRoot("test -e /system/etc/hosts && stat -c \"%n %s\"bytes\"\n" + "%z %U:%G\" /system/etc/hosts || echo -e \"hosts复制失败！\"", true);
+                                hosts_update_tv.setText(rtn);
+                                hosts_update_tv.append("\n Hosts 更新完成.\n");
+                                //String rtn = runAsRoot("mount -o rw,remount /system && mv " + Environment.getExternalStorageDirectory().toString() + File.separator + "hosts" + "/system/etc/hosts && chown root:root /system/etc/hosts && chmod 644 /system/etc/hosts && \"stat -c \\\"%n %s\\\"bytes\\\"\\n%z %U:%G\\\" /system/etc/hosts\\n\"", true);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
 
                 }
             });
@@ -298,15 +308,38 @@ public class HostUpdate extends AppCompatActivity {
             }
         }
     }
-    public static class TabFragment1 extends Fragment{
+    public class TabFragment1 extends Fragment{
         @Nullable
         @Override
         public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
             //return super.onCreateView(inflater, container, savedInstanceState);
             View rootView =  inflater.inflate(R.layout.fragment_hostsdelete, container, false);
-            Button delete_hosts_btn = (Button)rootView.findViewById(R.id.hosts_delete_btn);
-            TextView delete_hosts_tv = (TextView)rootView.findViewById(R.id.hosts_delete_tv);
+            final Button delete_hosts_btn = (Button)rootView.findViewById(R.id.hosts_delete_btn);
+            final TextView delete_hosts_tv = (TextView)rootView.findViewById(R.id.hosts_delete_tv);
+            delete_hosts_tv.setText("可以使用下面的delete 按钮来删除hosts，同样，该功能需要手机具有root权限。");
+            delete_hosts_btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    File hosts_file = new File("/system/etc/hosts");
+                    if (!hosts_file.exists()) {
+                        delete_hosts_tv.setText("hosts文件不存在， 或者已被删除。");
+                        return;
+                    }
+                    try {
+                        runAsRoot("mount -o rw,remount /system && rm -rf /system/etc/hosts", false);
+                        Thread.sleep(1000);
+                        String rtn = runAsRoot("if [ ! -e /system/etc/hosts ]\n" +
+                                " then echo -e \"delete /system/etc/hosts success.\n" +
+                                "\"\n" +
+                                "else echo -e \"delete /system/etc/hosts failed.\"\n" +
+                                "fi", true);
+                        delete_hosts_tv.setText(rtn);
 
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
             return rootView;
         }
     }
