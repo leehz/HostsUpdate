@@ -90,8 +90,11 @@ public class DownTask extends AsyncTask<URL, Integer, String> {
                 e.printStackTrace();
             }
 
-            Toast.makeText(mContext, "hosts下载完成， 保存在" + Environment.getExternalStorageDirectory().toString() + File.separator + "hosts", Toast.LENGTH_SHORT).show();
-
+            if(!file.exists()){
+                Toast.makeText(mContext, "无法保存到sdcard\n", Toast.LENGTH_SHORT).show();
+            }else {
+                Toast.makeText(mContext, "hosts下载完成， 保存在" + Environment.getExternalStorageDirectory().toString() + File.separator + "hosts", Toast.LENGTH_SHORT).show();
+            }
            /* try {
                 Process process =  Runtime.getRuntime().exec("/system/xbin/su");
                 //os = new DataOutputStream(process.getOutputStream());

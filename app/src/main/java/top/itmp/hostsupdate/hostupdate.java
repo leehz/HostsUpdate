@@ -244,7 +244,7 @@ public class HostUpdate extends AppCompatActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
            // return super.onCreateView(inflater, container, savedInstanceState);
-            View rootView = inflater.inflate(R.layout.fragment_hostsupdate, container, false);
+            final View rootView = inflater.inflate(R.layout.fragment_hostsupdate, container, false);
             final TextView host_update_tv = (TextView)rootView.findViewById(R.id.host_update_tv);
             Button host_update_btn = (Button)rootView.findViewById(R.id.host_update_btn);
             host_update_btn.setOnClickListener(new View.OnClickListener() {
